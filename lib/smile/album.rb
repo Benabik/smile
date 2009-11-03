@@ -294,7 +294,7 @@ class Smile::Album < Smile::Base
         :AlbumKey => key,
         :Heavy => 1
     )
-    options = Smile::ParamConverter.clean_hash_keys( options )
+    options = Smile::ParamConverter.clean_hash_keys( options ) if options
     params.merge!( options ) if( options )
     
     json = RestClient.post BASE, params
