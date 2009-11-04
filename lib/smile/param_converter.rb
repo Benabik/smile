@@ -36,7 +36,7 @@ module Smile::ParamConverter
       when :data, :type, :description, :keywords, :geography, :position, :header,
         :clean, :filenames, :password, :public, :external, :protected, :watermarking,
         :larges, :originals, :comments, :share, :printable, :backprinting
-        param.to_s.upcase.to_sym
+        param.to_s.titlecase.to_sym
       when :image_id
         :ImageID
       when :image_key
