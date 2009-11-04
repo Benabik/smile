@@ -100,6 +100,9 @@ class Smile::Album < Smile::Base
     # * AlbumKey - string.
     # 
     def find( options={} )
+      unless options
+        raise "Album.find has required options"
+      end
       params = default_params.merge(
           :method => 'smugmug.albums.getInfo'
       )
@@ -207,7 +210,7 @@ class Smile::Album < Smile::Base
           :method => 'smugmug.albums.create',
           :AlbumID => album_id
       )
-      options = Smile::ParamConverter.clean_hash_keys( options )
+      options = Smile::ParamConverter.clean_hash_keys( options ) if options
       params.merge!( options ) if( options )
 
       json = RestClient.post BASE, params
@@ -222,6 +225,7 @@ class Smile::Album < Smile::Base
   #
   # See #create for options
   def update( options )
+    return true unless options # If we're not updating anything, just skip out
     params = default_params.merge(
         :method => 'smugmug.albums.changeSettings',
         :AlbumID => album_id
@@ -269,7 +273,7 @@ class Smile::Album < Smile::Base
       :month => Date.today.month,
       :year => Date.today.year
     )
-    options = Smile::ParamConverter.clean_hash_keys( options )
+    options = Smile::ParamConverter.clean_hash_keys( options ) if options
     
     params.merge!( options ) if( options )
     
@@ -295,7 +299,7 @@ class Smile::Album < Smile::Base
   #   * :+altitude+, Fload - Altitude in meters
   def add( image, options={} )
     if( File.exists?( image ) )
-      options = Smile::ParamConverter.clean_hash_keys( options )
+      options = Smile::ParamConverter.clean_hash_keys( options ) if options
       json = RestClient.put UPLOAD + "/#{image}", File.read( image ),
         :content_length => File.size( image ),
         :content_md5 => MD5.hexdigest( File.read( image ) ),
@@ -328,7 +332,7 @@ class Smile::Album < Smile::Base
       :AlbumID => album_id
     )
     
-    options = Smile::ParamConverter.clean_hash_keys( options )
+    options = Smile::ParamConverter.clean_hash_keys( options ) if options
     
     params.merge!( options ) if( options )
     
@@ -346,7 +350,7 @@ class Smile::Album < Smile::Base
   # This method will re-sort all the photos inside of the album specified by 
   # AlbumID. Note that this is a one-time event, 
   # and doesn't apply directly to images added in the future by other means.
-  def resort!( options =nil )
+  def resort!
     params = default_params.merge( 
       :method => 'smugmug.albums.reSort',
       :AlbumID => album_id
