@@ -10,10 +10,10 @@ module Smile
  
     # Login to SmugMug using a specific user account.
     #
-    # @param [String] email The username ( Nickname ) for the SmugMug account
-    # @param [String] password The password for the SmugMug account
+    # [email] String: The username ( Nickname ) for the SmugMug account
+    # [password] String: The password for the SmugMug account
     #
-    # @return [Smile::SmugMug.new] An Smug object that has been authenticated
+    # Returns the server responce
     def auth( email, pass )
      params = default_params.merge(
         :method => 'smugmug.login.withPassword',
@@ -31,9 +31,10 @@ module Smile
     end
 
     # Login to SmugMug using an anonymously account
+    #
     # This will allow you to execute many functions, but no user specific functions
     #
-    # @return [Smile::SmugMug.new] An Smug object that has been authenticated
+    # Returns the server responce
     def auth_anonymously
       params = default_params.merge(
         :method => 'smugmug.login.anonymously'
@@ -58,19 +59,18 @@ module Smile
 
     
 
-    # Retrieves a list of albums for a given user. If you are logged in it will return
-    # your albums.
+    # Retrieves a list of albums for a given user. If you are logged in it
+    # will return your albums.
     # 
-    # @param [optional,Hash] options The magic options hash all ruby devs love
-    # @option options [optional, String] :nick_name If no nick name is supplied then...
-    # @option options [optional, true or false ] :heavy ('true') This will control how much 
-    # information is returned about the album
-    # @option options [optional, String] :site_password If you have not logged in then you can provide the 
-    # password here to access private information.
+    # *Options* (passed as Hash, optional)
+    # * :+nick_name+ - String, default: logged in user
+    # * :+heavy+ - Boolean, get full information about an album, default: true
+    # * :+site_password+ - String, if you have not logged in then you can
+    #   provide the password here to access private information
     #
-    # @return [Array<Smile::Album>]
+    # Returns an Array of Smile::Album
     # 
-    # @see Smug::Album#new For more information about heavy ( true and false ) responces
+    # See Smile::Album#new For more information about heavy (true and false) responces
     def albums( options=nil )
       params = default_params.merge( 
         :method => 'smugmug.albums.get',

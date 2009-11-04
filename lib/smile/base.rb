@@ -15,8 +15,9 @@ module Smile
     VERSION = '1.2.0'
     
     class << self
-      attr_accessor :session_id
       # This will be included in every request once you have logged in
+      attr_accessor :session_id
+
       def default_params
         base = { :APIKey => API }
         if( session_id )
