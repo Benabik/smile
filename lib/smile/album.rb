@@ -195,7 +195,7 @@ class Smile::Album < Smile::Base
     def create( title, options )
       options[:title] = title
       json = request 'albums.create', options
-      find( :album_id => json["Album"]["id"], :album_key => json["Album"]["key"] )
+      find( :album_id => json["Album"]["id"], :album_key => json["Album"]["Key"] )
       true
     end
   end
