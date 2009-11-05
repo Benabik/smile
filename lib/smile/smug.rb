@@ -15,15 +15,8 @@ module Smile
     #
     # Returns the server responce
     def auth( email, pass )
-     params = default_params.merge(
-        :method => 'smugmug.login.withPassword',
-        :EmailAddress => email,
-        :Password => pass
-      )
-
-      json = RestClient.post( BASE, params )
-      result = JSON.parse( json )
-      
+      result = request 'login.withPassword', nil,
+        :EmailAddress => email, :Password => pass
       self.session_id = result["Login"]["Session"]["id"]
       result
     rescue NoMethodError => e
@@ -36,12 +29,7 @@ module Smile
     #
     # Returns the server responce
     def auth_anonymously
-      params = default_params.merge(
-        :method => 'smugmug.login.anonymously'
-      )
-
-      json = RestClient.post( BASE, params )
-      result = JSON.parse( json )
+      result = request 'login.anonymously'
       self.session_id = result["Login"]["Session"]["id"]
       result
     rescue NoMethodError => e
@@ -50,11 +38,7 @@ module Smile
 
     # Close the session
     def logout
-      params = default_params.merge(
-        :method => 'smugmug.logout'
-      )
-
-      RestClient.post( BASE, params )
+      request 'logout'
     end
 
     
@@ -72,16 +56,9 @@ module Smile
     # 
     # See Smile::Album#new For more information about heavy (true and false) responces
     def albums( options=nil )
-      params = default_params.merge( 
-        :method => 'smugmug.albums.get',
-        :heavy => 1
-      )      
-
-      if options
-        options = Smile::ParamConverter.clean_hash_keys options
-        params = params.merge( options )
-      end
-      json = RestClient.post BASE, params
+      params = { :heavy => 1 }
+      params.merge! options if options
+      json = request 'albums.get', params
       
       Smile::Album.from_json( json, session_id )
     rescue

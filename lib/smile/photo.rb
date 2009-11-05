@@ -11,19 +11,24 @@ class Smile::Photo < Smile::Base
   class << self
     # Convert the given xml into photo objects to play with
     def from_json( json, session_id )
-      result = JSON.parse( json )
-      
-      result["Images"].map do |image_upper|
-        image = upper_hash_to_lower_hash( image_upper )
-        image.merge!( :image_id => image["id"] )
-        image.merge!( :album_key => image["album"]["key"] )
-        image.merge!( :album_id => image["album"]["id"] )
-        image.delete( 'album' )
-      
-        p = Smile::Photo.new( image )
-        p.session_id = session_id
-        p
+      json["Images"].map do |image_upper|
+        from_json_one image_upper, session_id
       end
+    end
+
+    # Convert a single JSON object to a Photo
+    def from_json_one( json, session_id )
+      image = upper_hash_to_lower_hash( json )
+      image.merge!(
+        :image_id => image["id"],
+        :album_key => image["album"]["key"],
+        :album_id => image["album"]["id"]
+      )
+      image.delete( 'album' )
+
+      p = Smile::Photo.new( image )
+      p.session_id = session_id
+      p
     end
     
     # This will pull a single image from the smugmug
@@ -35,25 +40,7 @@ class Smile::Photo < Smile::Base
     # * :+image_key+ - String
     def find( options={} )
       set_session if( session_id.nil? )
-      options = Smile::ParamConverter.clean_hash_keys( options )
-      
-      params = default_params.merge(
-          :method => 'smugmug.images.getInfo'
-      )
-      
-      params.merge!( options ) if( options )
-      json = RestClient.post Smile::Base::BASE, params
-      image_upper = JSON.parse( json )
-      image = upper_hash_to_lower_hash( image_upper['Image'] )
-      
-      image.merge!( :image_id => image["id"] )
-      image.merge!( :album_key => image["album"]["key"] )
-      image.merge!( :album_id => image["album"]["id"] )
-      image.delete( 'album' )
-      
-      p = Smile::Photo.new( image )
-      p.session_id = session_id
-      p
+      from_json_one request( 'images.getInfo', options )
     end
   end
   
@@ -101,16 +88,8 @@ class Smile::Photo < Smile::Base
   # ColorSpace:: String
   # Brightness:: String
   def details( options =nil )
-    params = default_params.merge(
-      :method => "smugmug.images.getEXIF",
-      :ImageID => self.image_id,
-      :ImageKey => self.key
-    )
-    
-    params.merge!( options ) if( options )
-    json = RestClient.post Smile::Base::BASE, params
-    
-    json = JSON.parse( json )
+    json = request 'images.getEXIF', options,
+      :ImageID => image_id, :ImageKey => key
     raise json["message"] if json["stat"] == 'fail'
       
     image = upper_hash_to_lower_hash( json['Image'] )
@@ -159,16 +138,7 @@ class Smile::Photo < Smile::Base
   #         id:: integer 
   #         Key:: String 
   def info( options =nil )
-    params = default_params.merge(
-      :method => "smugmug.images.getInfo",
-      :ImageID => self.image_id,
-      :ImageKey => self.key
-    )
-    
-    params.merge!( options ) if( options )
-    json = RestClient.post Smile::Base::BASE, params
-    
-    json = JSON.parse( json )
+    json = request 'images.getInfo', options, :ImageID => image_id, :ImageKey => key
     raise json["message"] if json["stat"] == 'fail'
       
     image = upper_hash_to_lower_hash( json['Image'] )
@@ -207,16 +177,7 @@ class Smile::Photo < Smile::Base
   # X3LargeURL:: String (if available)
   # OriginalURL:: String (if available)
   def urls( options =nil )
-    params = default_params.merge(
-      :method => "smugmug.images.getURLs",
-      :ImageID => self.image_id,
-      :ImageKey => self.key
-    )
-    
-    params.merge!( options ) if( options )
-    json = RestClient.post Smile::Base::BASE, params
-    
-    json = JSON.parse( json )
+    json = request 'images.getURLs', options, :ImageID => image_id, :ImageKey => key
     raise json["message"] if json["stat"] == 'fail'
       
     image = upper_hash_to_lower_hash( json['Image'] )

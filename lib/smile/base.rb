@@ -45,7 +45,22 @@ module Smile
           upper
         end
       end
-      
+
+      def request( method, params = nil, args = nil )
+        method = "smugmug." + method
+
+        if params
+          params = ParamConverter.clean_hash_keys params
+          params.merge! default_params
+        else
+          params = default_params
+        end
+        params.merge! args if args
+        params[:method] = method
+
+        json = RestClient.post BASE, params
+        JSON.parse json
+      end
     end
     
     attr_accessor :session_id
@@ -57,5 +72,11 @@ module Smile
     def upper_hash_to_lower_hash( hash )
       self.class.upper_hash_to_lower_hash( hash )
     end
+
+    def request( method, params = nil, args = nil )
+      self.class.session_id = self.session_id
+      self.class.request( method, params, args )
+    end
+    private :request
   end
 end
