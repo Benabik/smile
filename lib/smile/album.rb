@@ -302,7 +302,7 @@ class Smile::Album < Smile::Base
       options = Smile::ParamConverter.clean_hash_keys( options ) if options
       json = RestClient.put UPLOAD + "/#{image}", File.read( image ),
         :content_length => File.size( image ),
-        :content_md5 => MD5.hexdigest( File.read( image ) ),
+        :content_md5 => Digest::MD5.hexdigest( File.read( image ) ),
         :x_smug_sessionid => session_id,
         :x_smug_version => VERSION,
         :x_smug_responseType => "JSON",
