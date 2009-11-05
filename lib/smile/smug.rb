@@ -77,7 +77,10 @@ module Smile
         :heavy => 1
       )      
 
-      params = params.merge( options ) if( options )
+      if options
+        options = Smile::ParamConverter.clean_hash_keys options
+        params = params.merge( options )
+      end
       json = RestClient.post BASE, params
       
       Smile::Album.from_json( json, session_id )
