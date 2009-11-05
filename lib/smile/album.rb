@@ -217,8 +217,13 @@ class Smile::Album < Smile::Base
   def photos( options=nil )
     params = { :heavy => 1 }
     params.merge! options if options
-    json = request 'images.get', params, :AlbumID => album_id, :AlbumKey => key
-    Smile::Photo.from_json( json, session_id )
+    begin
+      json = request 'images.get', params, :AlbumID => album_id, :AlbumKey => key
+      Smile::Photo.from_json( json, session_id )
+    rescue Smile::Failure => f
+      return [] if f.code == 15 # No images
+      raise
+    end
   end
   
   # Pull stats for an Album for a given Month and Year
