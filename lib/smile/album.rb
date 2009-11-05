@@ -194,7 +194,6 @@ class Smile::Album < Smile::Base
     #   * :+community_id+ - Integer, default: 0
     def create( title, options )
       json = request 'albums.create', options
-      raise json["message"] if json["stat"] == 'fail'
       find( :album_id => json["Album"]["id"], :album_key => json["Album"]["key"] )
       true
     end
@@ -204,8 +203,7 @@ class Smile::Album < Smile::Base
   #
   # See #create for options
   def update( options )
-    json = request 'albums.changeSettings', options, :AlbumID => album_id
-    raise json["message"] if json["stat"] == 'fail'
+    request 'albums.changeSettings', options, :AlbumID => album_id
     true
   end
   
@@ -237,7 +235,6 @@ class Smile::Album < Smile::Base
     }
     params.merge! options if options
     json = request 'albums.getStats', params, :AlbumID => album_id
-    raise json["message"] if json["stat"] == 'fail'
 
     stat = upper_hash_to_lower_hash( json['Album'] )
     OpenStruct.new( stat )
@@ -285,7 +282,6 @@ class Smile::Album < Smile::Base
   # Deletes the album
   def delete!
     json = request 'albums.delete', nil, :AlbumID => album_id
-    raise json["message"] if json["stat"] == 'fail'
     
     album_id = nil
     album_key = nil
@@ -298,7 +294,6 @@ class Smile::Album < Smile::Base
   # and doesn't apply directly to images added in the future by other means.
   def resort!
     json = request 'albums.reSort', nil, :AlbumID => album_id
-    raise json["message"] if json["stat"] == 'fail'
     
     album_id = nil
     album_key = nil

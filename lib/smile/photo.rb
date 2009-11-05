@@ -91,7 +91,6 @@ class Smile::Photo < Smile::Base
   def details( options =nil )
     json = request 'images.getEXIF', options,
       :ImageID => image_id, :ImageKey => key
-    raise json["message"] if json["stat"] == 'fail'
       
     image = upper_hash_to_lower_hash( json['Image'] )
     image.merge!( :image_id => image["id"] )
@@ -140,7 +139,6 @@ class Smile::Photo < Smile::Base
   #         Key:: String 
   def info( options =nil )
     json = request 'images.getInfo', options, :ImageID => image_id, :ImageKey => key
-    raise json["message"] if json["stat"] == 'fail'
       
     image = upper_hash_to_lower_hash( json['Image'] )
     image.merge!( :image_id => image["id"] )
@@ -179,7 +177,6 @@ class Smile::Photo < Smile::Base
   # OriginalURL:: String (if available)
   def urls( options =nil )
     json = request 'images.getURLs', options, :ImageID => image_id, :ImageKey => key
-    raise json["message"] if json["stat"] == 'fail'
       
     image = upper_hash_to_lower_hash( json['Image'] )
     image.merge!( :image_id => image["id"] )

@@ -59,7 +59,9 @@ module Smile
         params[:method] = method
 
         json = RestClient.post BASE, params
-        JSON.parse json
+        json = JSON.parse json
+        raise Failure, json if json['stat'] == 'fail'
+        json
       end
     end
     
