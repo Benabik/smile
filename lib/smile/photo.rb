@@ -40,7 +40,8 @@ class Smile::Photo < Smile::Base
     # * :+image_key+ - String
     def find( options={} )
       set_session if( session_id.nil? )
-      from_json_one request( 'images.getInfo', options )
+      image = request( 'images.getInfo', options )['Image']
+      from_json_one( image, session_id )
     end
   end
   
