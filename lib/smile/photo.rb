@@ -187,4 +187,14 @@ class Smile::Photo < Smile::Base
   def album
     Smile::Album.find( :AlbumID => album_id, :AlbumKey => album_key )
   end
+
+  def stats( options = nil )
+    params = {
+      :month => Date.today.month,
+    }
+    params.merge! options if options
+    json = request 'images.getStats', params, :ImageID => image_id
+    stat = upper_hash_to_lower_hash json['Image']
+    OpenStruct.new stat
+  end
 end
