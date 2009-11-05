@@ -23,34 +23,30 @@ module Smile::ParamConverter
     :x3larges => :X3Larges,
   }
 
-  # Takes a key and value and returns cleaned versions.
+  # Takes a key and returns a cleaned version.
   #
   # Param is camelized and any final _id is turned to ID.  The final key is
   # always a Symbol.  There are a number of exceptions to this rule stored
   # in the initial @cache.
   #
-  # The value is titlecased if param is anything that converts to :Size
-  #
   # *Examples*
   # * convert( :album_id ) == :AlbumID
   # * convert( 'nick_name' ) == :NickName
-  def convert( param, value=nil )
+  def convert( param )
     key = @cache[param]
     unless key
       key = param.to_s.camelize
       key.sub! /Id$/, 'ID'
       @cache[param] = key = key.to_sym
     end
-
-    value = value.titlecase if key == :Size
-    [ key, value ]
+    key
   end
   
-  # Calls convert on every key and value in a hash
+  # Calls convert on every key in a hash
   def clean_hash_keys( hash_to_clean )
     cleaned_hash ={}
     hash_to_clean.each_pair do |key,value|
-      cleaned_hash[convert( key ).first] = value
+      cleaned_hash[convert( key )] = value
     end
     cleaned_hash
   end

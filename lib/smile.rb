@@ -37,7 +37,8 @@ module Smile
     url = "http://api.smugmug.com/hack/feed.mg?"
     url_params =[]
     options.each_pair do |k,value|
-      key, value = Smile::ParamConverter.convert( k, value )
+      key = ParamConverter.convert k
+      value = value.titlecase if key == :Size
       
       url_params << "#{key.to_s}=#{ CGI.escape( value ) }"
     end
