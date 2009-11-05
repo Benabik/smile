@@ -1,111 +1,52 @@
 module Smile::ParamConverter
   module_function
   
+  # Pre-load the cache with exceptions
+  @cache = {
+    :exif => :EXIF,
+    :geo_album => :geoAlbum,
+    :geo_all => :geoAll,
+    :geo_community => :geoCommunity ,
+    :geo_keyword => :geoKeyword,
+    :geo_search => :geoSearch,
+    :geo_user => :geoUser,
+    :nickname => :NickName,
+    :nickname_popular => :nicknamePopular,
+    :nickname_recent => :nicknameRecent,
+    :open_search_keyword => :openSearchKeyword,
+    :popular_category => :popularCategory,
+    :square_thumbs => :Square_Thumbs,
+    :user_comments => :userComments,
+    :user_keyword => :userkeyword,
+    :xlarges => :XLarges,
+    :x2larges => :X2Larges,
+    :x3larges => :X3Larges,
+  }
+
+  # Takes a key and value and returns cleaned versions.
+  #
+  # Param is camelized and any final _id is turned to ID.  The final key is
+  # always a Symbol.  There are a number of exceptions to this rule stored
+  # in the initial @cache.
+  #
+  # The value is titlecased if param is anything that converts to :Size
+  #
+  # *Examples*
+  # * convert( :album_id ) == :AlbumID
+  # * convert( 'nick_name' ) == :NickName
   def convert( param, value=nil )
-    key = nil
-    key = case param.to_s.downcase.to_sym
-      when :popular_category
-        :popularCategory
-      when :geo_all 
-        :geoAll
-      when :geo_keyword 
-        :geoKeyword
-      when :geo_search 
-        :geoSearch
-      when :geo_community
-        :geoCommunity 
-      when :open_search_keyword
-        :openSearchKeyword
-      when :user_keyword 
-        :userkeyword
-      when :nickname_recent 
-        :nicknameRecent
-      when :nickname_popular 
-        :nicknamePopular
-      when :user_comments 
-        :userComments
-      when :geo_user 
-        :geoUser
-      when :geo_album 
-        :geoAlbum
-      when :size
-        value = value.titlecase
-        :Size
-      when :image_count
-        :ImageCount
-      when :data, :type, :description, :keywords, :geography, :position, :header,
-        :clean, :filenames, :password, :public, :external, :protected, :watermarking,
-        :larges, :originals, :comments, :share, :printable, :backprinting
-        param.to_s.titlecase.to_sym
-      when :image_id
-        :ImageID
-      when :image_key
-        :ImageKey
-      when :image_count
-        :ImageCount
-      when :nickname, :nick_name
-        :NickName
-      when :category_id
-        :CategoryID
-      when :sub_categroy_id
-        :SubCategoryID
-      when :album_template_id
-        :AlbumTemplateID
-      when :highlight_id
-        :HighlightID
-      when :exif
-        :EXIF
-      when :square_thumbs
-        :Square_Thumbs
-      when :tempate_id
-        :TemplateID
-      when :sort_method
-        :SortMethod
-      when :sort_direction
-        :SortDirection
-      when :password_hint
-        :PasswordHint
-      when :word_searchable
-        :WordSearchable
-      when :smug_searchable
-        :SmugSearchable
-      when :watermark_id
-        :WatermarkID
-      when :hide_owner
-        :HideOwner
-      when :x_larges, :xlarges
-        :XLarges
-      when :x2_larges, :x2larges
-        :X2Larges
-      when :x3_larges, :x3larges
-        :X3Larges
-      when :can_rank
-        :CanRank
-      when :friend_edit
-        :FriendEdit
-      when :family_edit
-        :FamilyEdit
-      when :color_correction
-        :ColorCorrection
-      when :default_color
-        :DefaultColor
-      when :proof_days
-        :ProofDays
-      when :unsharp_amount
-        :UnsharpAmount
-      when :unsharp_radius
-        :UnsharpRadius
-      when :unsharp_sigma
-        :UnsharpSigma
-      when :community_id
-        :CommunityID
-      else
-        key = param
+    key = @cache[param]
+    unless key
+      key = param.to_s.camelize
+      key.sub! /Id$/, 'ID'
+      @cache[param] = key = key.to_sym
     end
-    
+
+    value = value.titlecase if key == :Size
     [ key, value ]
   end
   
+  # Calls convert on every key and value in a hash
   def clean_hash_keys( hash_to_clean )
     cleaned_hash ={}
     hash_to_clean.each_pair do |key,value|
