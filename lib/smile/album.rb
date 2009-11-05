@@ -193,6 +193,7 @@ class Smile::Album < Smile::Base
     #   *Community*
     #   * :+community_id+ - Integer, default: 0
     def create( title, options )
+      options[:title] = title
       json = request 'albums.create', options
       find( :album_id => json["Album"]["id"], :album_key => json["Album"]["key"] )
       true
