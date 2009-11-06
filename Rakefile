@@ -6,14 +6,14 @@ begin
   Jeweler::Tasks.new do |gem|
     gem.name = "smile"
     gem.summary = %Q{Simple API for talking to SmugMug}
-    gem.email = "zac@kleinpeter.org"
-    gem.homepage = "http://github.com/cajun/smile"
-    gem.authors = ["cajun"]
+    gem.email = "brian@gernhardtsoftware.com"
+    gem.homepage = "http://github.com/benabik/smile"
+    gem.authors = ["cajun", "benabik"]
     gem.files << "lib/**/*"
     gem.add_dependency( 'rest-client' )
     gem.add_dependency( 'activesupport' )
     gem.add_dependency( 'json' )
-    gem.rubyforge_project = 'cajun-gems'
+    # gem.rubyforge_project = 'cajun-gems'
     
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
   end
