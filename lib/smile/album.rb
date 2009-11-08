@@ -304,8 +304,4 @@ class Smile::Album < Smile::Base
     album_key = nil
     nil
   end
-  
-  def category
-    ['category']
-  end
 end
